@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div>
+  <h1 style="float:left;"> Courses </h1>
+  <a href="{% url 'add_course' %}" class="btn btn-light text-right" style="float:right;" role="button">Add Course</a>
+  </div>
+  <br><br><br>
+  <div class="card">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>Course</th>
+		  <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in my_courses %}
+          <tr>
+            <td class="align-middle black-text">{{ course.name }}</td>
+            <td class="text-right">
+              <a href="#" class="btn btn-primary">Go to Course</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td class="bg-light text-center font-italic" colspan="4">You have not added any courses yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

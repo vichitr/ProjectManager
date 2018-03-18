@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div>
+  <h1 style="float:left;"> Projects </h1>
+  </div>
+  <br><br><br>
+  <div class="card">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>Project</th>
+		  <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for project in projects %}
+          <tr>
+            <td class="align-middle black-text">{{ project.name }}</td>
+            <td class="text-right">
+              <a href="#" class="btn btn-primary">Go to Project</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td class="bg-light text-center font-italic" colspan="4">You are not assigned to review any projects yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

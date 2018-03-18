@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  {% include 'classroom/students/_header.html' with active='taken' %}
+  <div class="card">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Subject</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for taken_project in taken_projects %}
+          <tr>
+            <td>{{ taken_project.project.name }}</td>
+            <td>{{ taken_project.project.subject.get_html_badge }}</td>
+            <td>{{ taken_project.score }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td class="bg-light text-center font-italic" colspan="3">You haven't submitted any project yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1> Courses </h1>
+  <div class="card">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>Course</th>
+          <th>Teacher</th>
+		  <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in courses %}
+          <tr>
+            <td class="align-middle">{{ course.name }}</td>
+            <td class="align-middle">{{ course.owner }}</td>
+            <td class="text-right">
+              <a href="#" class="btn btn-primary">Go to Course</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td class="bg-light text-center font-italic" colspan="4">No courses available right now.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
