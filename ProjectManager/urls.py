@@ -17,13 +17,19 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from classroom.views import classroom, students, teachers, reviewers
-
+#from django.contrib.staticfiles.urls import static
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
-	path('admin/', admin.site.urls),
+	path('me/', admin.site.urls),
 	path('', include('classroom.urls')),
 	path('accounts/',include('django.contrib.auth.urls')),
 	path('accounts/signup/', classroom.SignUpView.as_view(), name='signup'),
+	path('accounts/profile/', classroom.ProfileView.as_view(), name='profile'),
+	path('accounts/<int:pk>/profile/update/', classroom.ProfileUpdateView.as_view(), name='update_profile'),
 	path('accounts/signup/student',students.StudentSignUpView.as_view(), name='student_signup'),
 	path('accounts/signup/teacher',teachers.TeacherSignUpView.as_view(), name='teacher_signup'),
 	path('accounts/signup/reviewer',reviewers.ReviewerSignUpView.as_view(), name='reviewer_signup'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

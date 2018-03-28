@@ -2,11 +2,16 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.html import escape, mark_safe
 
-
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'user_{0}/{1}'.format(instance.user.id, filename)
+	
 class User(AbstractUser):
-    is_student = models.BooleanField(default=False)
-    is_teacher = models.BooleanField(default=False)
-    is_reviewer = models.BooleanField(default=False)
+	is_student = models.BooleanField(default=False)
+	is_teacher = models.BooleanField(default=False)
+	is_reviewer = models.BooleanField(default=False)
+	image = models.ImageField(upload_to =user_directory_path, default='user.png')
+	
 
 		
 class Subject(models.Model):
@@ -27,6 +32,42 @@ class Course(models.Model):
 	owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='courses')
 	#invloved_students = models.ManyToManyField(User, related_name='students')
 	name = models.CharField(max_length=500)
+	classes=(
+		('a', 'B. Tech'),
+		('b', 'M. Tech'),
+		('c', 'MCA'),
+		('d',  'PhD'),
+	)
+	cls = models.CharField(max_length=1, choices=classes)
+	sems =(
+		('1',  '1'),
+		('2',  '2'), 
+		('3',  '3'), 
+		('4',  '4'), 
+		('5', '5'), 
+		('6', '6'), 
+		('7', '7'), 
+		('8', '8'),
+	)
+	semester = models.CharField(max_length=1, choices=sems)
+	deps = (
+		('a', 'Department of Computer Science and Engineering'),
+		('b', 'Department of Information Technology'),
+		('c', 'Department of Electronics & Communication Engineering'),
+		('d',  'Department of Electrical and Electronics Engineering'),
+		('e', 'Department of Mechanical Engineering'),
+		('f', 'Department of Civil Engineering'),
+		('g', 'Department of Mathematical and Computational Sciences'),
+		('h', 'Department of Mining Engineering'),
+		('i', 'Department of Chemical Engineering'),
+		('j', 'Department of Metallurgical and Materials Engineering'),
+		('k', 'Department of Applied Mechanics and Hydraulics'),
+		('l', 'Department of Physics'),
+		('m', 'Department of Chemistry'),
+		('n', 'Department of Placement and Training'),
+		('o', 'School of Management'),
+	)
+	department = models.CharField(max_length=1, choices = deps)
 	#projects = models.ManyToManyField(Project, on_delete=models.CASCADE, related_name='projects_list')
 	info = models.CharField(max_length=100000)
 	

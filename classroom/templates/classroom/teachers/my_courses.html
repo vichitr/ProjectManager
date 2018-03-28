@@ -1,8 +1,15 @@
 {% extends 'base.html' %}
+
 {% block content %}
   <div>
-  <h1 style="float:left;"> Courses </h1>
-  <a href="{% url 'add_course' %}" class="btn btn-light text-right" style="float:right;" role="button">Add Course</a>
+	<a href = "{% url 'add_student' %}" class = "btn btn-light text-center" style = "float:left;width:25%;" role="button">Add Student</a>
+	<a href = "{% url 'add_reviewer' %}" class = "btn btn-light text-center" style = "float:left;width:25%" role="button">Add Reviewer</a>
+	<a href="{% url 'add_course' %}" class="btn btn-light text-center" style="float:left;width:25%;" role="button">Add Course</a>
+	<a href = "{% url 'profile' %}" class="btn btn-primary text-center" style="float:left;width:25%;" role="button">My Profile</a>
+  </div>
+  <br>
+  <div>
+    <h1 style="float:left;">My Courses </h1>
   </div>
   <br><br><br>
   <div class="card">
@@ -18,7 +25,7 @@
           <tr>
             <td class="align-middle black-text">{{ course.name }}</td>
             <td class="text-right">
-              <a href="#" class="btn btn-primary">Go to Course</a>
+              <a href="{% url 'course_teacher_page' course.pk %}" class="btn btn-primary">Go to Course</a>
             </td>
           </tr>
         {% empty %}

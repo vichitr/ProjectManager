@@ -25,7 +25,7 @@
       })
     </script>
   </head>
-  <body background="{% static 'images/favicon.jpg' %}">
+  <body >
 	<div class="container my-4">
       <div class="row justify-content-center">
         <div class="col-md-10 col-sm-12">
@@ -48,9 +48,9 @@
             </div>
             <div class="col-6 text-right">
               {% if user.is_authenticated %}
-                <p class="pt-3">Logged in as <strong>{{ user.username }}</strong>. <a href="{% url 'logout' %}">Log out</a>.</p>
+                <p class="pt-3">Logged in as <a href="{% url 'profile' %}">{{ user.username }}</a>. <a href="{% url 'logout' %}">Log out</a>.</p>
               {% else %}
-                <a href="{% url 'login' %}" class="btn btn-light" role="button">Log in</a>
+                <a href="{% url 'login' %}" class="btn btn-primary" role="button">Log in</a>
                 <a href="{% url 'signup' %}" class="btn btn-primary" role="button">Sign up</a>
               {% endif %}
             </div>
@@ -73,7 +73,7 @@
       </div>
     </div>
   </body>
-  <footer style="margin-left:50px;">
+  <footer style="margin-left:150px;">
             copyright © Student Teacher Project Manager
   </footer>
 </html>

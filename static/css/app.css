@@ -57,6 +57,18 @@ footer a {
   border-color: #66598B;
 }
 
+.btn-reviewer {
+    color: #fff;
+    background-color: #7b1fa2;
+    border-color: #7b1fa2;
+}
+
+.btn-reviewer:hover,
+.btn-reviewer:active {
+    color:#fff;
+    background-color: #4a148c;
+    border-color: #4a148c;
+}
 .has-danger .radio,
 .has-danger .checkbox {
   color: #dc3545;

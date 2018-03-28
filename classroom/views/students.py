@@ -4,12 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
+from django.http import Http404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView, UpdateView, DetailView, DeleteView
-
+from django.core.mail import send_mail
 from ..decorators import student_required
-from ..forms import StudentCoursesForm, StudentSignUpForm, TakenProjectForm, IdeaForm
+from ..forms import StudentSignUpForm, TakenProjectForm, IdeaForm
 from ..models import Project, Student, TakenProject, User, Course
 
 
@@ -24,6 +25,11 @@ class StudentSignUpView(CreateView):
 
     def form_valid(self, form):
         user = form.save()
+        subject = "Welcome to Student Teacher Project Manager"
+        message = "Your account has been created successfully. Now you can use our services.\nRegards\nStudent Teacher Project Manager"
+        sender = "vichitrgandas@gmail.com"
+        recipients=[user.email]
+        #send_mail(subject,message,sender, recipients)
         login(self.request, user)
         return redirect('student_courses')
 
@@ -39,6 +45,31 @@ class CourseListView(ListView):
 		#courses = student.courses.values_list('pk', flat=True)
 		return Course.objects.all
 
+@method_decorator([login_required], name='dispatch')
+class CoursePageView(DetailView):
+    model = Course
+    template_name ='classroom/students/course_page.html'
+    '''
+    context_object_name = 'course'
+    def get_queryset(request, pk):
+        course = Course.objects.get(pk=pk)
+        return course
+    '''
+
+    def course_detail_view(request,pk):
+        try:
+            course_id=Course.objects.get(pk=pk)
+        except Course.DoesNotExist:
+            raise Http404("Course does not exist")
+
+        #book_id=get_object_or_404(Book, pk=pk)
+
+        return render(
+            request,
+            'classroom/students/course_page.html',
+            context={'course':course_id,}
+        )
+
 @method_decorator([login_required, student_required], name='dispatch')
 class ProjectListView(ListView):
     model = Project
@@ -50,7 +81,7 @@ class ProjectListView(ListView):
         student = self.request.user.student
         student_courses = student.courses.values_list('pk', flat=True)
         taken_projects = student.projects.values_list('pk', flat=True)
-        queryset = Project.objects.filter(subject__in=student_courses) 
+        queryset = Project.objects.filter(subject__in=student_courses)
            # .exclude(pk__in=taken_quizzes) \
             #.annotate(questions_count=Count('questions')) \
             #.filter(_count__gt=0)

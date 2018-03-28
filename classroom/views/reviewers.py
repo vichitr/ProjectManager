@@ -13,7 +13,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
 from ..decorators import teacher_required,student_required, reviewer_required
 from ..forms import IdeaForm, ReviewerSignUpForm
 from ..models import Solution, Idea, Project, User, Course
-
+from django.core.mail import send_mail
 
 class ReviewerSignUpView(CreateView):
     model = User
@@ -26,6 +26,11 @@ class ReviewerSignUpView(CreateView):
 
     def form_valid(self, form):
         user = form.save()
+        subject = "Welcome to Student Teacher Project Manager"
+        message = "Your account has been created successfully. Now you can use our services.\nRegards\nStudent Teacher Project Manager"
+        sender = "vichitrgandas@gmail.com"
+        recipients=[user.email]
+        #send_mail(subject,message,sender, recipients)
         login(self.request, user)
         return redirect('reviewer_home')
 

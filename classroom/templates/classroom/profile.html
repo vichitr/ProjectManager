@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+	<img style="margin-left:300px;;margin-right:auto;height:300px;width:300px;" src="{{user.image.url}}" />
+	<a href="{% url 'update_profile' user.pk %}" class="btn btn-primary text-right" style="float:right;" role="button">Update Profile</a>
+	<hr>
+	<h5 style="margin-left: 20px;">Username: {{user.username}} </h5>
+	<hr>
+	<h5 style="margin-left: 20px;">First Name: {{user.first_name}} </h5>
+	<hr>
+	<h5 style="margin-left: 20px;">Last Name: {{user.last_name}} </h5>
+	<hr>
+	<h5 style="margin-left: 20px;">Email: {{user.email}} </h5>
+	<hr>
+	
+{% endblock %}

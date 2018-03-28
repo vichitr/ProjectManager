@@ -141,9 +141,20 @@ LOGIN_REDIRECT_URL = 'home'
 
 LOGOUT_REDIRECT_URL = 'home'
 
-
+#Media root
+MEDIA_ROOT = 'media/'
+MEDIA_URL = '/media/'
 # Messages built-in framework
+# email 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = 'vichitrgandas@gmail.com'
+EMAIL_HOST = 'localhost'
+EMAIL_HOST_USER = 'vichitrgandas@gmail.com'
+EMAIL_HOST_PASSWORD = 'vichitrvinod'
+EMAIL_PORT = 8000
+EMAIL_USE_TLS = False
 
+#Messages Framework
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-secondary',
     messages.INFO: 'alert-info',
