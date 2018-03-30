@@ -2,8 +2,8 @@
 {% block content %}
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{% url 'student_courses' %}">Courses</a></li>
-      <li class="breadcrumb-item"><a href="{% url 'course_page' course.pk %}">{{ course.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'my_courses' %}">Courses</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'course_teacher_page' course.pk %}">{{ course.name }}</a></li>
 	  <li class="breadcrumb-item active" aria-current="page">Submitted Projects </li>
     </ol>
   </nav>
@@ -13,16 +13,16 @@
       <thead>
         <tr>
           <th>Title</th>
-		  <th>Team Members</th>
-		  <th>Idea</th>
+		  <th></th>
         </tr>
       </thead>
       <tbody>
         {% for project in projects %}
           <tr>
             <td class="align-middle">{{ project.title }}</td>
-			<td class="align-middle">{{ project.members }}</td>
-			<td class="align-middle">{{ project.idea }}</td>
+            <td class="text-right">
+              <a href="{% url 'view_project' project.pk %}" class="btn btn-primary">View Project</a>
+            </td>
           </tr>
         {% empty %}
           <tr>

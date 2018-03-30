@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
   <div>
-  <h1 style="float:left;"> Projects </h1>
+  <h1 style="float:left;">Assigned Projects </h1>
   </div>
   <br><br><br>
   <div class="card">
@@ -9,15 +9,16 @@
       <thead>
         <tr>
           <th>Project</th>
-		  <th></th>
+		  <th>Members</th>
         </tr>
       </thead>
       <tbody>
         {% for project in projects %}
           <tr>
-            <td class="align-middle black-text">{{ project.name }}</td>
+            <td class="align-middle black-text">{{ project.title }}</td>
+            <td class="align-middle black-text">{{ project.members }}</td>
             <td class="text-right">
-              <a href="#" class="btn btn-primary">Go to Project</a>
+              <a href="{% url 'project_page' project.pk %}" class="btn btn-primary">Go to Project</a>
             </td>
           </tr>
         {% empty %}

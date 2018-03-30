@@ -3,6 +3,8 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.html import escape, mark_safe
+from django.utils import timezone
+import datetime
 
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
@@ -15,8 +17,12 @@ class User(AbstractUser):
 	image = models.ImageField(upload_to =user_directory_path, default='user.png')
 	phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$')
 	phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
+	assigned_projects = models.IntegerField(default=0)
 	#phone_number=PhoneNumberField( blank=True,  default='0')
 
+class Report(models.Model):
+	file = models.FileField(upload_to='uploads/' )
+	projectid = models.IntegerField(default=0)
 
 class Project(models.Model):
 	owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
@@ -24,10 +30,11 @@ class Project(models.Model):
 	members=models.CharField(max_length=200)
 	idea = models.CharField(max_length=1000000, default='')
 	review=models.CharField(max_length= 1000000, default='')
-	comments=models.CharField(max_length=1000000, default='')
+	#comments=models.CharField(max_length=1000000, default='')
 	marks_assigned = models.BooleanField(default=False)
 	marks = models.IntegerField(default=0)
 	courseid = models.IntegerField(default = 0)
+	reviewee = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'reviewer_projects')
     #subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='projects')
 
 	def __str__(self):
@@ -35,6 +42,16 @@ class Project(models.Model):
 	def members_as_list(self):
 		m = list(map(str, self.members.split(',')))
 		return m
+
+class Comment(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='comments')
+    author = models.CharField(max_length=200)
+    text = models.TextField()
+    created_date = models.DateTimeField(default=timezone.now)
+    #approved_comment = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.text
 
 class Course(models.Model):
 	owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='courses')
@@ -97,3 +114,5 @@ class Student(models.Model):
 
     def __str__(self):
         return self.user.username
+
+		

@@ -9,7 +9,7 @@
   <br>
   <div>
 	<a href="{% url 'project_info' course.pk %}" class="btn btn-light text-center" style="float:left;width:25%;background-color: #b0aac2;" role = "button">Project Info</a>
-	<a href="#" class="btn btn-light text-center" style="float:left;width:25%; margin-left:30px;background-color: #b0aac2;" role = "button">Submitted Projects</a>
+	<a href="{% url 'submitted_course_projects' course.pk %}" class="btn btn-light text-center" style="float:left;width:25%; margin-left:30px;background-color: #b0aac2;" role = "button">Submitted Projects</a>
 	<a href="{% url 'update_course' course.pk %}" class="btn btn-primary text-center" style="float:right; width:25%;" role="button">Update Course</a>
   </div>
   <br><br>

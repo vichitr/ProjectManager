@@ -8,12 +8,11 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  UpdateView)
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView)
 
 from ..decorators import teacher_required,student_required
-from ..forms import TeacherSignUpForm, AddStudentForm, AddReviewerForm
-from ..models import Project, User, Course
+from ..forms import TeacherSignUpForm, AddStudentForm, AddReviewerForm, CommentForm
+from ..models import Project, User, Course, Comment
 from django.core.mail import send_mail
 
 class TeacherSignUpView(CreateView):
@@ -99,6 +98,39 @@ class UpdateProjectInfo(UpdateView):
 		messages.success(self.request, 'Project info was updated successfully!')
 		return redirect('project_info', course.pk)
 
+@method_decorator([login_required],name='dispatch')
+class SubmittedProjectsView(ListView):
+	#model = Course
+	template_name = 'classroom/teachers/submitted_projects.html'
+	#queryset = Project.objects.all()
+	context_object_name = 'projects'
+	#ordering = ('name', )
+	#projects = []
+	
+	def get_queryset(self):
+		#course = Course.objects.get(pk=self.kwargs.get('pk'))
+		projects = Project.objects.all().filter(courseid__exact=int(self.kwargs.get('pk')))
+		return projects
+	
+	def get_context_data(self, **kwargs):
+		context = super(SubmittedProjectsView, self).get_context_data(**kwargs)
+		course = Course.objects.get(pk=self.kwargs.get('pk'))
+		context['course']=course
+		return context
+
+@method_decorator([login_required, teacher_required], name='dispatch')
+class ViewProjectView(DetailView):
+	model = Project
+	template_name = 'classroom/teachers/view_project.html'
+	def view_project(request, pk):
+		try:
+			project = Project.objects.get(pk=pk)
+			course_id = int(project.courseid)
+			reports = Report.objects.all #filter(projectid__exact=course_id)
+		except Project.DoesNotExist:
+			raise Http404("Project does not exist")
+		return render(request, 'classroom/teachers/view_project.html', context={'project':project,'reports':reports, 'course':course_id})
+		
 @method_decorator([login_required], name='dispatch')
 class CourseTeacherView(DetailView):
     model = Course
@@ -164,3 +196,32 @@ class CourseUpdateView(UpdateView):
         course.save()
         messages.success(self.request, 'The course was updated successfully!')
         return redirect('course_teacher_page', course.pk)
+
+class AssignMarks(UpdateView):
+	model = Project
+	fields = ('marks',)
+	template_name = 'classroom/teachers/assign_marks.html'
+	context_object_name = 'project'
+	def form_valid(self, form):
+		project = form.save(commit=False)
+		project.marks_assigned = True
+		project.save()
+		messages.success(self.request, 'Marks updated successfully!')
+		return redirect('view_project', project.pk)
+
+def PostComment(request, pk):
+	project = get_object_or_404(Project, pk = pk)
+	if request.method == "POST":
+		form = CommentForm(request.POST)
+		if form.is_valid():
+			comment = form.save(commit=False)
+			comment.project = project
+			comment.save()
+			return redirect('view_project', project.pk)
+	else:
+		form = CommentForm()
+	return render(request, 'classroom/teachers/post_comment.html',{'form': form})
+
+
+	
+

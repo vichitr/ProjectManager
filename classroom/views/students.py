@@ -10,8 +10,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView, UpdateView, DetailView, DeleteView, TemplateView
 from django.core.mail import send_mail
 from ..decorators import student_required
-from ..forms import StudentSignUpForm, ProjectCreationForm
-from ..models import Project, Student, User, Course
+from ..forms import StudentSignUpForm, ProjectCreationForm, ReportForm
+from ..models import Project, Student, User, Course, Comment, Report
 
 
 class StudentSignUpView(CreateView):
@@ -142,33 +142,8 @@ class MyProjectView(ListView):
 			context['project']=project
 		else:
 			context['project']=None
-		'''
-		pros = Project.objects.all().filter(courseid__exact=int(self.kwargs.get('pk')))
-		project = pros[0]
-		for i in pros:
-			if i.owner == self.request.user:
-				project = i
-				break
-		context['project'] = project
-		'''
 		return context
-	'''
-	def myproject_view(self, request, pk):
-		#course = Course.objects.get(pk=pk)
-		#project = course.projects.filter(owner=self.request.user)
-		try:
-			course = Course.objects.get(pk=pk)
-			student = self.request.user
-			projects =Project.objects.filter(courseid__exact=int(pk))
-			project = projects[0]
-			for i in projects:
-				if i.owner == request.user:
-					project = i
-					break
-		except Course.DoesNotExist:
-			raise Http404("Course does not exist")
-		return render(request, 'classroom/students/my_project.html',context={'course':course,'project':project, 'projects':projects})
-	'''
+
 	
 @method_decorator([login_required, student_required], name='dispatch')		
 class SubmitMyProjectView(CreateView):
@@ -182,6 +157,7 @@ class SubmitMyProjectView(CreateView):
 	def form_valid(self, form):
 		project= form.save(commit=False)
 		project.owner = self.request.user
+		project.reviewee = self.request.user
 		project.courseid = self.kwargs.get('pk')
 		project.save()
 		messages.success(self.request, 'The project was submitted successfully!')
@@ -205,18 +181,20 @@ class SubmitMyProjectView(CreateView):
 @method_decorator([login_required, student_required], name='dispatch')	
 class UpdateMyProjectView(UpdateView):
 	model = Project
-	fields = ('title','members','idea',)
-	'''
-	emplate_name = 'classroom/students/submit_my_project.html'
+	fields = ('title','idea',)
+	
+	template_name = 'classroom/students/update_my_project.html'
 	context_object_name='project'
 	
 	def form_valid(self, form):
+		#course_id = int(self.kwargs.get('id'))
+		#project_id = int(self.kwargs.get('pk'))
 		project= form.save(commit=False)
 		project.owner = self.request.user
 		project.save()
-		messages.success(self.request, 'The project was submitted successfully!')
-		return redirect('my_project')
-	'''	
+		messages.success(self.request, 'The project was updated successfully!')
+		return redirect('student_courses')
+	
 	
 @method_decorator([login_required, student_required], name='dispatch')
 class ProjectListView(ListView):
@@ -234,3 +212,16 @@ class ProjectListView(ListView):
             #.annotate(questions_count=Count('questions')) \
             #.filter(_count__gt=0)
         return queryset
+
+@student_required
+def SubmitReport(request):
+	if request.method=="POST":
+		form = ReportForm(request.POST, request.FILES)
+		if form.is_valid():
+			report = Report(file=request.FILES['file'])
+			#report.projectid = int(self.kwargs.get('pk'))
+			report.save()
+			return redirect('student_courses')
+	else:
+		form = ReportForm()
+	return render(request, 'classroom/upload.html', {'form': form}) #'submit_report',pk)

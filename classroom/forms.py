@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction
 from django.forms.utils import ValidationError
 
-from classroom.models import Student, Course, Project, User
+from classroom.models import Student, Course, Project, User, Comment, Report
 
 
 class TeacherSignUpForm(UserCreationForm):
@@ -95,4 +95,17 @@ class ProjectCreationForm(forms.ModelForm):
 		if commit:
 			project.save()
 		return project
-		
+class CommentForm(forms.ModelForm):
+
+    class Meta:
+        model = Comment
+        fields = ('author', 'text',)		
+
+class ReportForm(forms.ModelForm):
+	file = forms.FileField(
+		label='Select a file',
+		help_text='max. 100MB'
+	)
+	class Meta:
+		model = Report
+		fields =['file']

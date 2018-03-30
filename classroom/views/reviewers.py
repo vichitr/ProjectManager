@@ -34,6 +34,7 @@ class ReviewerSignUpView(CreateView):
         login(self.request, user)
         return redirect('reviewer_home')
 
+@method_decorator([ login_required, reviewer_required], name='dispatch')
 class ReviewerHomePageView(ListView):
 	model=Project
 	ordering = ('name', )
@@ -42,5 +43,35 @@ class ReviewerHomePageView(ListView):
 	def get_queryset(self):
 		#student = self.request.user
 		#courses = student.courses.values_list('pk', flat=True)
-		return Project.objects.all
+		reviewer = self.request.user
+		return reviewer.reviewer_projects.all
 
+@method_decorator([login_required, reviewer_required], name='dispatch')
+class ProjectView(DetailView):
+	model = Project
+	template_name='classroom/reviewers/project_page.html'
+	def view_project(request, pk):
+		try:
+			project = Project.objects.get(pk=pk)
+			course_id = int(project.courseid)
+			reports = Report.objects.all #filter(projectid__exact=course_id)
+		except Project.DoesNotExist:
+			raise Http404("Project does not exist")
+		return render(request, 'classroom/reviewers/project_page.html', context={'project':project,'reports':reports, 'course':course_id})
+		
+@method_decorator([login_required, reviewer_required], name='dispatch')	
+class SubmitReview(UpdateView):
+	model = Project
+	fields = ('review',)
+	
+	template_name = 'classroom/reviewers/submit_review.html'
+	#context_object_name='project'
+	
+	def form_valid(self, form):
+		#course_id = int(self.kwargs.get('id'))
+		project_id = int(self.kwargs.get('pk'))
+		project= form.save(commit=False)
+		#project.owner = self.request.user
+		project.save()
+		messages.success(self.request, 'The review was submitted successfully!')
+		return redirect('project_page',project.pk )

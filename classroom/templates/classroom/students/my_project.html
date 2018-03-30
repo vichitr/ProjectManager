@@ -12,7 +12,8 @@
 	{% if project %}
 	  <div>
 		<div>
-		  <a href="#" class="btn btn-primary text-center" style="float:right;" role="button">Update Project</a>
+		  <a href="{% url 'upload_report' %}" class="btn btn-primary text-center" style="float:left;" role="button"> Submit Report </a>
+		  <a href="{% url 'update_my_project' project.pk %}" class="btn btn-primary text-center" style="float:right;" role="button">Update Project</a>
 		  {% if project.marks_assigned %}
 		  <h5 style="margin-left:20px;">Marks assigned: {{ project.marks }}</h5>
 		  {% endif %}
@@ -46,7 +47,15 @@
 	<hr>
 	<h4 style="margin-left:20px;">Comments: </h4>
 	<br>
-	<p style="margin-left:20px;">{{ project.comments }}</p>
+	{% for comment in project.comments.all %}
+    <div class="comment">
+        <div class="date">{{ comment.created_date }}</div>
+        <strong>{{ comment.author }}</strong>
+        <p>{{ comment.text|linebreaks }}</p>
+    </div>
+	{% empty %}
+		<p style="margin-left:20px;">No comments here yet :(</p>
+	{% endfor %}
 	<hr>
   </div>
 {% endblock %}
