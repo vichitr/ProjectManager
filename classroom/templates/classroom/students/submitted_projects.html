@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'student_courses' %}">Courses</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'course_page' course.pk %}">{{ course.name }}</a></li>
+	  <li class="breadcrumb-item active" aria-current="page">Submitted Projects </li>
+    </ol>
+  </nav>
+  <h1> Projects </h1>
+  <div class="card">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>Title</th>
+		  <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for project in projects %}
+          <tr>
+            <td class="align-middle">{{ project.title }}</td>
+            <td class="text-right">
+              <a href="#" class="btn btn-primary">View Project</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td class="bg-light text-center font-italic" colspan="4">No projects submitted till now.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

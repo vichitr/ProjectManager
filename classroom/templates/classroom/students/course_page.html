@@ -7,9 +7,9 @@
     </ol>
   </nav>
   <div>
-	<a href="#" class="btn btn-light text-center" style="float:left;width:25%;background-color: #b0aac2;" role = "button">Project Info</a>
-	<a href="#" class="btn btn-light text-center" style="float:left;width:25%; margin-left:30px;background-color: #b0aac2;" role = "button">Submitted Projects</a>
-	<a href="#" class="btn btn-primary text-center" style="float:right;width:15%;" role="button">My Project</a>
+	<a href="{% url 'project_detail' course.pk %}" class="btn btn-light text-center" style="float:left;width:25%;background-color: #b0aac2;" role = "button">Project Info</a>
+	<a href="{% url 'submitted_projects' course.pk %}" class="btn btn-light text-center" style="float:left;width:25%; margin-left:30px;background-color: #b0aac2;" role = "button">Submitted Projects</a>
+	<a href="{% url 'my_project' course.pk %}" class="btn btn-primary text-center" style="float:right;width:15%;" role="button">My Project</a>
   </div>
   <br><br>
   <div class="card">

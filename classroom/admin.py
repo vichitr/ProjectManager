@@ -1,5 +1,5 @@
 from django.contrib import admin
-from classroom.models import Project, Student, TakenProject, User, Course,Solution, Idea, Subject
+from classroom.models import Project, Student, User, Course,Teacher
 
 class StudentAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -13,25 +13,31 @@ admin.site.register(Student, StudentAdmin)
 class UserAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('username','first_name','last_name','email', 'password','is_student','is_teacher','is_reviewer',)
+            'fields': ('username','first_name','last_name','email','phone_number', 'password','is_student','is_teacher','is_reviewer',)
         }),
     )
 admin.site.register(User, UserAdmin)
+
+class TeacherAdmin(admin.ModelAdmin):
+	fieldsets=(
+		(None, {
+			'fields':('user','courses',)
+		}),
+	)
+admin.site.register(Teacher, TeacherAdmin)
+
 class CourseAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': ('name', 'info','owner',)
         }),
     )
-
 admin.site.register(Course, CourseAdmin)
 
 class ProjectAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('name', 'subject','owner',)
+            'fields': ('courseid', 'title', 'owner','members','idea','review','comments','marks_assigned','marks',)
         }),
     )
-
 admin.site.register(Project, ProjectAdmin)
-

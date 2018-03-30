@@ -11,8 +11,8 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
 
 from ..decorators import teacher_required,student_required, reviewer_required
-from ..forms import IdeaForm, ReviewerSignUpForm
-from ..models import Solution, Idea, Project, User, Course
+from ..forms import ReviewerSignUpForm
+from ..models import Project, User, Course
 from django.core.mail import send_mail
 
 class ReviewerSignUpView(CreateView):

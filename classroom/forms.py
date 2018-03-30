@@ -1,18 +1,20 @@
 from django import forms
+from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction
 from django.forms.utils import ValidationError
 
-from classroom.models import (Solution, Idea, Student, StudentSolution,
-                              Subject, User)
+from classroom.models import Student, Course, Project, User
 
 
 class TeacherSignUpForm(UserCreationForm):
     first_name =  forms.CharField( max_length=100, required=True)
     email = forms.EmailField(required=True)
+   # phone_number = forms.RegexField(regex=r'^\+?1?\d{9,15}$', required=False)
+    #contact_no=PhoneNumberField()
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', ]
+        fields = ['username', 'first_name', 'last_name', 'email','phone_number' ]
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_teacher = True
@@ -23,9 +25,11 @@ class TeacherSignUpForm(UserCreationForm):
 class ReviewerSignUpForm(UserCreationForm):
     email = forms.EmailField(max_length= 254, required=True)
     first_name= forms.CharField(max_length=50, required=True)
+   # phone_number = forms.RegexField(regex=r'^\+?1?\d{9,15}$', required=False)
+    #contact_no=PhoneNumberField()
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', ]
+        fields = ['username', 'first_name', 'last_name', 'email','phone_number']
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_reviewer = True
@@ -36,9 +40,11 @@ class ReviewerSignUpForm(UserCreationForm):
 class StudentSignUpForm(UserCreationForm):
     email = forms.EmailField(max_length= 254, required=True)
     first_name= forms.CharField(max_length=50, required=True)
+    #phone_number = forms.RegexField(regex=r'^\+?1?\d{9,15}$', required=False)
+    #contact_no=PhoneNumberField()
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', ]
+        fields = ['username', 'first_name', 'last_name', 'email', 'phone_number']
     @transaction.atomic
     def save(self):
         user = super().save(commit=False)
@@ -76,24 +82,17 @@ class AddReviewerForm(UserCreationForm):
             user.save()
         return user		
 
-class IdeaForm(forms.ModelForm):
-    class Meta:
-        model = Idea
-        fields = ('text', )
-
-
-class TakenProjectForm(forms.ModelForm):
-    solution = forms.ModelChoiceField(
-        queryset=Solution.objects.none(),
-        widget=forms.RadioSelect(),
-        required=True,
-        empty_label=None)
-
-    class Meta:
-        model = StudentSolution
-        fields = ('solution', )
-
-    def __init__(self, *args, **kwargs):
-        Idea = kwargs.pop('Idea')
-        super().__init__(*args, **kwargs)
-        self.fields['answer'].queryset = Idea.answers.order_by('text')
+class ProjectCreationForm(forms.ModelForm):
+	class Meta:
+		model = Project
+		fields = ['title','members','idea']
+		widgets={
+			'members': forms.TextInput(attrs={'placeholder':'Member names separated by commas'}),
+			'idea': forms.Textarea(attrs={'placeholder':'Describe your idea'}),
+		}
+	def save(self, commit=True):
+		project=super().save(commit=False)
+		if commit:
+			project.save()
+		return project
+		

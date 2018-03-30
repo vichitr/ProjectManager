@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'student_courses' %}">Courses</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'course_page' course.pk %}">{{ course.name }}</a></li>
+	  <li class="breadcrumb-item"><a href="{% url 'my_project' course.pk %}">My Project</a></li>
+	  <li class="breadcrumb-item active" aria-current="page">Submit </li>
+    </ol>
+  </nav>
+  <br>
+  <h2 class="mb-3">Submit Project</h2>
+  <div class="row">
+    <div class="col-md-6 col-sm-8 col-12">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{% url 'my_project' course.pk %}" class="btn btn-outline-secondary" role="button">Nevermind</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

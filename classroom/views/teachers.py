@@ -12,8 +12,8 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
 
 from ..decorators import teacher_required,student_required
-from ..forms import IdeaForm, TeacherSignUpForm, AddStudentForm, AddReviewerForm
-from ..models import Solution, Idea, Project, User, Subject, Course
+from ..forms import TeacherSignUpForm, AddStudentForm, AddReviewerForm
+from ..models import Project, User, Course
 from django.core.mail import send_mail
 
 class TeacherSignUpView(CreateView):
@@ -73,6 +73,31 @@ class MyCourseListView(ListView):
 		teacher = self.request.user
 		courses = teacher.courses.all
 		return courses
+
+@method_decorator([login_required], name='dispatch')
+class ProjectInfoView(DetailView):
+	model = Course
+	template_name='classroom/teachers/project_info.html'
+	
+	def project_info_view(request, pk):
+		try:
+			course_id = Course.objects.get(pk=pk)
+		except Course.DoesNotExist:
+			raise Http404("Course does not exist")
+		return render(request, 'classroom/teachers/project_info.html',context={'course':course_id,})
+
+@method_decorator([login_required, teacher_required], name='dispatch')
+class UpdateProjectInfo(UpdateView):
+	model = Course
+	template_name = 'classroom/teachers/update_project_info.html'
+	fields = ('project_details',)
+		#template_name = 'classroom/teachers/course_update_form.html'
+	context_object_name = 'course'
+	def form_valid(self, form):
+		course= form.save(commit=False)
+		course.save()
+		messages.success(self.request, 'Project info was updated successfully!')
+		return redirect('project_info', course.pk)
 
 @method_decorator([login_required], name='dispatch')
 class CourseTeacherView(DetailView):
@@ -139,27 +164,3 @@ class CourseUpdateView(UpdateView):
         course.save()
         messages.success(self.request, 'The course was updated successfully!')
         return redirect('course_teacher_page', course.pk)
-
-@method_decorator([login_required, student_required], name='dispatch')
-class IdeaDeleteView(DeleteView):
-    model = Idea
-    context_object_name = ''
-    template_name = 'classroom/students/idea_delete_confirm.html'
-    pk_url_kwarg = 'idea_pk'
-
-    def get_context_data(self, **kwargs):
-        course = self.get_object()
-        kwargs['idea'] = idea.project
-        return super().get_context_data(**kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        idea = self.get_object()
-        messages.success(request, 'The idea %s was deleted successfully!' % idea.text)
-        return super().delete(request, *args, **kwargs)
-
-    def get_queryset(self):
-        return Idea.objects.filter(project__owner=self.request.user)
-
-    def get_success_url(self):
-        idea = self.get_object()
-        return reverse('students:project_update', kwargs={'pk': idea.project_id})

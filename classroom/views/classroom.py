@@ -22,7 +22,7 @@ class ProfileView(TemplateView):
 	
 class ProfileUpdateView(UpdateView):
 	model = User
-	fields = ('first_name','last_name','email')
+	fields = ('first_name','last_name','email','phone_number')
 	template_name = 'classroom/profile_update_form.html'
 	def form_valid(self, form):
 		user = form.save(commit=False)
