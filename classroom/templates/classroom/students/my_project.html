@@ -12,7 +12,7 @@
 	{% if project %}
 	  <div>
 		<div>
-		  <a href="{% url 'upload_report' %}" class="btn btn-primary text-center" style="float:left;" role="button"> Submit Report </a>
+		  <a href="{% url 'submit_report' project.pk %}" class="btn btn-primary text-center" style="float:left;" role="button"> Submit Report </a>
 		  <a href="{% url 'update_my_project' project.pk %}" class="btn btn-primary text-center" style="float:right;" role="button">Update Project</a>
 		  {% if project.marks_assigned %}
 		  <h5 style="margin-left:20px;">Marks assigned: {{ project.marks }}</h5>

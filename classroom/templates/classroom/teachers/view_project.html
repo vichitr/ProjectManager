@@ -9,6 +9,9 @@
   <br>
   <div>
 	<a href="{% url 'assign_marks' project.pk %}" class="btn btn-primary text-center" style="float:right;" role="button">Assign Marks</a>
+	{% if not project.is_assigned %}
+		<a href="{% url 'assign_reviewer' project.pk %}" class="btn btn-primary text-center" style="float:right;" role="button">Assign Reviewer</a>
+	{% endif %}
 	{% if project.marks_assigned %}
       <h5 style="margin-left:20px;">Marks assigned: {{ project.marks }}</h5>
 	{% endif %}  
@@ -32,7 +35,6 @@
 	<br><hr>
 	<h4 style="margin-left:20px;">Reports: </h4>
     <br>
-	{{course.value}}
 	<ol>
 	{% for report in reports %}
       <li><a href="{{ report.file.url }}">{{ report.file.name }}</a></li>

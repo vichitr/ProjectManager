@@ -34,6 +34,9 @@ class Project(models.Model):
 	marks_assigned = models.BooleanField(default=False)
 	marks = models.IntegerField(default=0)
 	courseid = models.IntegerField(default = 0)
+	is_assigned = models.BooleanField(default=False)
+	#reviewee_choices = User.objects.filter(is_reviewer=True)
+	#reviewees = models.CharField(max_length=1, choices=reviewee_choices)
 	reviewee = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'reviewer_projects')
     #subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='projects')
 

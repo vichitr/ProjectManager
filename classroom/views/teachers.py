@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.db import models
+from django import forms
 from django.db.models import Avg, Count
 from django.forms import inlineformset_factory
 from django.http import Http404
@@ -11,8 +13,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView)
 
 from ..decorators import teacher_required,student_required
-from ..forms import TeacherSignUpForm, AddStudentForm, AddReviewerForm, CommentForm
-from ..models import Project, User, Course, Comment
+from ..forms import TeacherSignUpForm, AddStudentForm, AddReviewerForm, CommentForm, AssignReviewerForm
+from ..models import Project, User, Course, Comment, Report
 from django.core.mail import send_mail
 
 class TeacherSignUpView(CreateView):
@@ -118,6 +120,18 @@ class SubmittedProjectsView(ListView):
 		context['course']=course
 		return context
 
+@login_required
+@teacher_required		
+def ViewProjectView(request, pk):
+	project=Project.objects.get(pk=pk)
+	course_id=int(project.courseid)
+	reports = Report.objects.all().filter(projectid__exact=int(pk))
+	'''
+	if project.DoesNotExist:
+		return Http404("Project does not exist")
+		'''
+	return render(request, 'classroom/teachers/view_project.html', context={'project':project,'reports':reports, 'course':course_id})
+'''
 @method_decorator([login_required, teacher_required], name='dispatch')
 class ViewProjectView(DetailView):
 	model = Project
@@ -130,7 +144,8 @@ class ViewProjectView(DetailView):
 		except Project.DoesNotExist:
 			raise Http404("Project does not exist")
 		return render(request, 'classroom/teachers/view_project.html', context={'project':project,'reports':reports, 'course':course_id})
-		
+'''
+
 @method_decorator([login_required], name='dispatch')
 class CourseTeacherView(DetailView):
     model = Course
@@ -222,6 +237,17 @@ def PostComment(request, pk):
 		form = CommentForm()
 	return render(request, 'classroom/teachers/post_comment.html',{'form': form})
 
-
-	
-
+def AssignReviewer(request, pk):
+	project = get_object_or_404(Project, pk=pk)
+	if request.method=="POST":
+		form = AssignReviewerForm(request.POST)
+		#form.fields['reviewee'] = forms.MultipleChoiceField(queryset=User.objects.all().filter(is_reviewer=True))
+		if form.is_valid():
+			pro = form.save(commit=False)
+			project.reviewee = pro.reviewee
+			project.is_assigned = True
+			project.save()
+			return redirect('view_project', project.pk)
+	else:
+		form=AssignReviewerForm()
+	return render(request, 'classroom/teachers/assign_reviewer.html', {'form':form})

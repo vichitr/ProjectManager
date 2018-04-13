@@ -125,20 +125,22 @@ class MyProjectView(ListView):
 	context_object_name='projects'
 	def get_queryset(self):
 		#course = Course.objects.get(pk=self.kwargs.get('pk'))
-		projects = Project.objects.all().filter(courseid__exact=int(self.kwargs.get('pk')))
-		return projects
+		project = Project.objects.all().filter(courseid__exact=int(self.kwargs.get('pk')), owner=self.request.user)
+		return project
 	
 	def get_context_data(self, **kwargs):
 		context = super(MyProjectView, self).get_context_data(**kwargs)
 		course = Course.objects.get(pk=self.kwargs.get('pk'))
 		context['course']=course
-		pros = Project.objects.all().filter(courseid__exact=int(self.kwargs.get('pk')))
+		pros = Project.objects.all().filter(courseid__exact=int(self.kwargs.get('pk')), owner=self.request.user)
 		if len(pros)!=0:
 			project = pros[0]
+			'''
 			for i in pros:
 				if i.owner==self.request.user:
 					project = i
 					break
+			'''
 			context['project']=project
 		else:
 			context['project']=None
@@ -208,20 +210,19 @@ class ProjectListView(ListView):
         student_courses = student.courses.values_list('pk', flat=True)
         taken_projects = student.projects.values_list('pk', flat=True)
         queryset = Project.objects.filter(subject__in=student_courses)
-           # .exclude(pk__in=taken_quizzes) \
-            #.annotate(questions_count=Count('questions')) \
-            #.filter(_count__gt=0)
         return queryset
 
+
+@login_required
 @student_required
-def SubmitReport(request):
+def SubmitReport(request, pk):
 	if request.method=="POST":
 		form = ReportForm(request.POST, request.FILES)
 		if form.is_valid():
 			report = Report(file=request.FILES['file'])
-			#report.projectid = int(self.kwargs.get('pk'))
+			report.projectid = int(pk)
 			report.save()
 			return redirect('student_courses')
 	else:
 		form = ReportForm()
-	return render(request, 'classroom/upload.html', {'form': form}) #'submit_report',pk)
+	return render(request, 'classroom/students/submit_report.html', {'form': form}) #'submit_report',pk)

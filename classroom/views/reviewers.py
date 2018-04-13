@@ -12,7 +12,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
 
 from ..decorators import teacher_required,student_required, reviewer_required
 from ..forms import ReviewerSignUpForm
-from ..models import Project, User, Course
+from ..models import Project, User, Course, Report, Comment
 from django.core.mail import send_mail
 
 class ReviewerSignUpView(CreateView):
@@ -46,6 +46,15 @@ class ReviewerHomePageView(ListView):
 		reviewer = self.request.user
 		return reviewer.reviewer_projects.all
 
+@login_required
+@reviewer_required
+def ProjectView(request, pk):
+	project = Project.objects.get(pk=pk)
+	course_id=int(project.courseid)
+	reports = Report.objects.all().filter(projectid__exact=int(pk))
+	return render(request, 'classroom/reviewers/project_page.html', context={'project':project,'reports':reports, 'course':course_id})
+
+'''
 @method_decorator([login_required, reviewer_required], name='dispatch')
 class ProjectView(DetailView):
 	model = Project
@@ -54,11 +63,12 @@ class ProjectView(DetailView):
 		try:
 			project = Project.objects.get(pk=pk)
 			course_id = int(project.courseid)
-			reports = Report.objects.all #filter(projectid__exact=course_id)
+			reports = Report.objects.all().filter(projectid__exact=course_id)
 		except Project.DoesNotExist:
 			raise Http404("Project does not exist")
 		return render(request, 'classroom/reviewers/project_page.html', context={'project':project,'reports':reports, 'course':course_id})
-		
+'''
+
 @method_decorator([login_required, reviewer_required], name='dispatch')	
 class SubmitReview(UpdateView):
 	model = Project

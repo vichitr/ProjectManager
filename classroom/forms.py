@@ -102,10 +102,16 @@ class CommentForm(forms.ModelForm):
         fields = ('author', 'text',)		
 
 class ReportForm(forms.ModelForm):
-	file = forms.FileField(
-		label='Select a file',
-		help_text='max. 100MB'
-	)
 	class Meta:
 		model = Report
 		fields =['file']
+
+class AssignReviewerForm(forms.ModelForm):
+	class Meta:
+		model=Project
+		fields =('reviewee',)
+		'''
+	def __init__(self):
+		#super(AssignReviewerForm, self).__init__(self)
+		self.fields['reviewee'].queryset = User.objects.all().filter(is_reviewer=True)
+		'''
